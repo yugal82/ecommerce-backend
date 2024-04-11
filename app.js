@@ -14,7 +14,7 @@ const productRoutes = require('./routes/productRoutes');
 app.use('/product', productRoutes);
 
 app.get('/', async (req, res) => {
-    res.status(200).json({ status: 'success' });
+  res.status(200).json({ status: 'success' });
 });
 
 module.exports = app;
