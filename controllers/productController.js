@@ -5,7 +5,29 @@ const Product = require('../models/productModel');
 const getAllProducts = async (req, res) => {
     try {
         // if there are any queries such as sort, category, brand, etc. then apply respective queries and then fetch all products from the database.
-        const products = await Product.find();
+        // based on the model of the product, user can query through the following parameters:
+        // -category - Jeans/Shirts/Tshirts/Shorts, etc. --------DONE
+        // -brand - Roadster, Jack&Jones, etc --------DONE
+        // -rating - more than 4, less than 3, etc --------DONE
+        // -colors - white, black, etc --------DONE
+        // -price range - 500 to 800, 800 to 1000, etc.
+        const queryObj = { ...req?.query };
+        const excludeFields = ['sort', 'order', 'price', 'rating'];
+        excludeFields.forEach((field) => delete queryObj[field]);
+
+        let query = Product.find(queryObj);
+
+        // sorting can be done on the basis of - High to low, Low to high, Best Rating.
+        // for sorting, the sorting parameter would be either price or rating.
+        // And with sorting, there shall follow order parameter - ascending or descending.
+        // sorting is done here
+        if (req?.query?.sort) {
+            let sortParams = { [req?.query?.sort]: req?.query?.order };
+            query = query.sort(sortParams);
+        }
+
+        // once all the query are chained onto the find(), we call exec() method to execute the query.
+        const products = await query.exec();
         res.status(200).json({
             status: 'Success',
             message: 'Succesfully fetched all products',

@@ -1,0 +1,29 @@
+{
+    "name": "Mens blue faded jeans",
+    "price": 8,
+    "discountPercentage": 5.5,
+    "description": "This is a mens blue faded jeans with a stylish monkey fade look and a slim fit pattern",
+    "images": [
+        "https://cdn.dummyjson.com/product-images/1/1.jpg",
+        "https://cdn.dummyjson.com/product-images/1/2.jpg",
+        "https://cdn.dummyjson.com/product-images/1/3.jpg",
+        "https://cdn.dummyjson.com/product-images/1/4.jpg",
+        "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg"
+    ],
+    "imageSrc": "https://cdn.dummyjson.com/product-images/1/thumbnail.jpg",
+    "colors": ["White", "Black", "Blue"],
+    "sizes": [
+        { "name": "XS", "inStock": true },
+        { "name": "S", "inStock": true },
+        { "name": "M", "inStock": true },
+        { "name": "L", "inStock": true },
+        { "name": "XL", "inStock": true },
+        { "name": "XXL", "inStock": true }
+    ],
+    "details": "Blue colored jeans that goes well with any colored shirt/tshirt",
+    "rating": 4.69,
+    "stock": 94,
+    "brand": "Roadster",
+    "category": "Jeans",
+    "deleted": false
+}

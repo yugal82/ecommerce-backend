@@ -27,14 +27,25 @@ const productSchema = mongoose.Schema({
         type: String,
         required: [true, 'Product must have a thumbnail URL.'],
     },
-    // colors: {
-    //     type: [Object],
-    //     required: [true],
-    // },
-    // size: {
-    //     type: [Object],
-    //     required: [true],
-    // },
+    colors: {
+        type: [String],
+        required: [true],
+    },
+    sizes: {
+        type: [
+            {
+                name: {
+                    type: String,
+                    required: [true],
+                },
+                inStock: {
+                    type: Boolean,
+                },
+            },
+        ],
+        required: [true],
+        _id: false,
+    },
     details: {
         type: String,
         required: [true],
