@@ -59,4 +59,13 @@ const createProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, getAllProducts, getProductById };
+const updateProduct = async (req, res) => {
+  try {
+    const updatedProduct = await Product.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+    sendResponse(res, 'Success', 200, 'Product updated successfully', null, updatedProduct, updatedProduct.length);
+  } catch (error) {
+    sendResponse(res, 'Fail', 400, 'Failed to update product', error, null, null);
+  }
+};
+
+module.exports = { createProduct, getAllProducts, getProductById, updateProduct };
