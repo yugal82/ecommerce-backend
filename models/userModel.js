@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   addresses: { type: [mongoose.Schema.Types.Mixed] },
-  role: { type: String },
+  role: { type: String, required: true, default: 'user' },
   orders: { type: [mongoose.Schema.Types.Mixed] },
 });
 

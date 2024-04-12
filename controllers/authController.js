@@ -3,12 +3,17 @@ const { sendResponse } = require('../utils/utils');
 
 const signup = async (req, res) => {
   try {
+    const isExisting = await User.findOne({ email: req.body.email });
+    if (isExisting) {
+      const error = new Error("User already exists. Can't sign up with the same email address");
+      sendResponse(res, 'Fail', 400, 'User already exists', error.message, null, null);
+    }
     const userData = req.body;
     let user = new User(userData);
     user = await user.save();
     sendResponse(res, 'Success', 201, 'User successfully signed up', null, user, user.length);
   } catch (error) {
-    sendResponse(res, 'Error', 400, 'Error while signing up.', error, null, null);
+    sendResponse(res, 'Error', 400, 'Error while signing up.', error.message, null, null);
   }
 };
 
@@ -17,7 +22,7 @@ const login = async (req, res) => {
     // login locgic here.
     sendResponse(res, 'Success', 201, 'User logged in', null, null, null);
   } catch (error) {
-    sendResponse(res, 'Error', 400, 'Error while logging in.', error, null, null);
+    sendResponse(res, 'Error', 400, 'Error while logging in.', error.message, null, null);
   }
 };
 

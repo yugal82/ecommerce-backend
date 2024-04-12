@@ -40,7 +40,7 @@ const getProductById = async (req, res) => {
     const product = await Product.findById({ _id: req.params.id });
     if (product === null) {
       const error = new Error('Invalid product Id');
-      sendResponse(res, 'Fail', 400, 'Invalid Product Id!', error, null, null);
+      sendResponse(res, 'Fail', 400, 'Invalid Product Id!', error.message, null, null);
     } else {
       sendResponse(res, 'Success', 200, 'Product found!', null, product, product.length);
     }
