@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
 mongoose
-  .connect('mongodb://localhost:27017/ecommerce', {
+  .connect(process.env.MONGODB_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -14,5 +14,5 @@ mongoose
   .catch((err) => console.log(err));
 
 app.listen(process.env.PORT, () => {
-  console.log('Server is live!');
+  console.log(`Server is live on ${process.env.PORT} port`);
 });
