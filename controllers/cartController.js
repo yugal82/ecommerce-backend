@@ -18,13 +18,33 @@ const getAllItemsFromCart = async (req, res) => {
 
 const addToCart = async (req, res) => {
   try {
-    // add the product id to cart schema
     const cartItem = new Cart(req.body);
-    const item = await cartItem.save();
+    const doc = await cartItem.save();
+    // we need to find the product after it is saved, becuase we cannot populate before saving the product.
+    const item = await Cart.findOne({ _id: cartItem.id });
     sendResponse(res, 'Success', 200, 'Product added to cart', null, item, null);
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Something went wrong', error, null, null);
   }
 };
 
-module.exports = { addToCart, getAllItemsFromCart };
+const deleteItemFromCart = async (req, res) => {
+  try {
+    // get item id to delete from cart
+    await Cart.findByIdAndDelete(req.params.id);
+    sendResponse(res, 'Success', 200, 'Item deleted from cart', null, {}, null);
+  } catch (error) {
+    sendResponse(res, 'Error', 400, 'Something went wrong', error, null, null);
+  }
+};
+
+const updateItem = async (req, res) => {
+  try {
+    const updatedItem = await Cart.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+    sendResponse(res, 'Success', 200, 'Cart updated successfully', null, updatedItem, updatedItem.length);
+  } catch (error) {
+    sendResponse(res, 'Fail', 400, 'Failed to update cart', error, null, null);
+  }
+};
+
+module.exports = { addToCart, getAllItemsFromCart, deleteItemFromCart, updateItem };
