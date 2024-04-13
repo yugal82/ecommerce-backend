@@ -4,7 +4,7 @@ const { sendResponse } = require('../utils/utils');
 const getAllItemsFromCart = async (req, res) => {
   try {
     // we have to get all the items of a particular user. this can be done by filtering out the products of a certain userId
-    const cartProducts = await Cart.find({ userId: req.body.userId });
+    const cartProducts = await Cart.find({ userId: req.query.id });
     if (cartProducts.length) {
       sendResponse(res, 'Success', 200, 'Products fetched from cart', null, cartProducts, cartProducts.length);
     } else {
@@ -38,13 +38,14 @@ const deleteItemFromCart = async (req, res) => {
   }
 };
 
-const updateItem = async (req, res) => {
+const updateCart = async (req, res) => {
   try {
-    const updatedItem = await Cart.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
-    sendResponse(res, 'Success', 200, 'Cart updated successfully', null, updatedItem, updatedItem.length);
+    const updatedCart = await Cart.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+    const result = await updatedCart.populate('productId');
+    sendResponse(res, 'Success', 200, 'Cart updated successfully', null, result, result.length);
   } catch (error) {
     sendResponse(res, 'Fail', 400, 'Failed to update cart', error, null, null);
   }
 };
 
-module.exports = { addToCart, getAllItemsFromCart, deleteItemFromCart, updateItem };
+module.exports = { addToCart, getAllItemsFromCart, deleteItemFromCart, updateCart };

@@ -16,7 +16,7 @@ const getAllProducts = async (req, res) => {
     const excludeFields = ['sort', 'order', 'price', 'rating'];
     excludeFields.forEach((field) => delete queryObj[field]);
 
-    let query = Product.find(queryObj);
+    let query = Product.find({ ...queryObj, deleted: { $ne: true } });
 
     // sorting can be done on the basis of - High to low, Low to high, Best Rating.
     // for sorting, the sorting parameter would be either price or rating.

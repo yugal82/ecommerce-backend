@@ -11,6 +11,7 @@ app.use(cors());
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 // Define all the middleware functions here
 
@@ -18,6 +19,7 @@ const cartRoutes = require('./routes/cartRoutes');
 app.use('/product', productRoutes);
 app.use('/user', userRoutes);
 app.use('/cart', cartRoutes);
+app.use('/order', orderRoutes);
 
 app.get('/', async (req, res) => {
   res.status(200).json({ status: 'success' });
