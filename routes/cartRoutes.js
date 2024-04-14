@@ -3,7 +3,7 @@ const { getAllItemsFromCart, addToCart, deleteItemFromCart, updateCart } = requi
 
 const router = express.Router();
 
-router.get('/cart-items/:id', getAllItemsFromCart);
+router.get('/cart-items', getAllItemsFromCart);
 router.post('/add-item', addToCart);
 router.delete('/delete-item/:id', deleteItemFromCart);
 router.patch('/update-cart/:id', updateCart);
