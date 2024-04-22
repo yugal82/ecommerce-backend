@@ -5,17 +5,13 @@ const app = express();
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const User = require('./models/userModel');
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// require all the routes here
-const productRoutes = require('./routes/productRoutes');
-const userRoutes = require('./routes/userRoutes');
-const cartRoutes = require('./routes/cartRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-
-// Define all the middleware functions here
 app.use(
   session({
     secret: 'ecommerce-secret',
@@ -25,40 +21,52 @@ app.use(
 );
 app.use(passport.authenticate('session'));
 
-// Define all the Routes here
-app.use('/product', productRoutes);
-app.use('/user', userRoutes);
-app.use('/cart', cartRoutes);
-app.use('/order', orderRoutes);
+// require all the routes here
+const productRoutes = require('./routes/productRoutes');
+const userRoutes = require('./routes/userRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 passport.use(
-  new LocalStrategy(function (username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) return done(err);
-      if (!user) return done(null, false);
-      if (!user.verifyPassword(password)) return done(null, false);
-      return done(null, user);
-    });
+  new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+    try {
+      const user = await User.findOne({ email: email }).exec();
+      if (!user) {
+        done(null, false, { message: 'User not found' });
+      } else if (user.password === password) {
+        done(null, user);
+      } else done(null, false, { message: 'Invalid credentials' });
+    } catch (error) {
+      done(error);
+    }
   })
 );
 
 // this creates a session variable on req.user on being called from callbacks
-passport.serializeUser(function (user, cb) {
-  process.nextTick(function () {
-    return cb(null, {
-      id: user.id,
-      username: user.username,
-      picture: user.picture,
-    });
+passport.serializeUser((user, cb) => {
+  process.nextTick(() => {
+    return cb(null, { id: user.id, role: user.role });
   });
 });
 
 // this changes a session variable on req.user when called from authorized requests
-passport.deserializeUser(function (user, cb) {
-  process.nextTick(function () {
+passport.deserializeUser((user, cb) => {
+  process.nextTick(() => {
     return cb(null, user);
   });
 });
+
+const isAuthenticated = (req, res, next) => {
+  if (req.user) next();
+  else return res.sendStatus(401);
+};
+// Define all the middleware functions here
+
+// Define all the Routes here
+app.use('/product', productRoutes);
+app.use('/user', userRoutes);
+app.use('/cart', isAuthenticated, cartRoutes);
+app.use('/order', isAuthenticated, orderRoutes);
 
 app.get('/', async (req, res) => {
   res.status(200).json({ status: 'success' });

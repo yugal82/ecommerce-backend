@@ -20,7 +20,8 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     // login locgic here.
-    sendResponse(res, 'Success', 201, 'User logged in', null, null, null);
+    // passportJs auth implementation done in app.js file
+    res.json({ status: 'Success', user: req.user });
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Error while logging in.', error.message, null, null);
   }
