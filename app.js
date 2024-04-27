@@ -38,6 +38,7 @@ const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
@@ -100,6 +101,7 @@ app.use('/product', productRoutes);
 app.use('/user', userRoutes);
 app.use('/cart', isAuthenticated(), cartRoutes);
 app.use('/order', isAuthenticated(), orderRoutes);
+app.use('/wishlist', isAuthenticated(), wishlistRoutes);
 
 app.get('/', async (req, res) => {
   res.status(200).json({ status: 'success' });

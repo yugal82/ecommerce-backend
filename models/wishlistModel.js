@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const cartSchema = mongoose.Schema({
+const wishlistSchema = mongoose.Schema({
   productId: {
     type: mongoose.Types.ObjectId,
     ref: 'products',
@@ -11,19 +11,14 @@ const cartSchema = mongoose.Schema({
     ref: 'users',
     required: true,
   },
-  quantity: {
-    type: Number,
-    required: true,
-    default: 1,
-  },
 });
 
-const virtual = cartSchema.virtual('id');
+const virtual = wishlistSchema.virtual('id');
 virtual.get(function () {
   return this._id;
 });
 
-cartSchema.set('toJSON', {
+wishlistSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
@@ -31,7 +26,7 @@ cartSchema.set('toJSON', {
   },
 });
 
-cartSchema.pre('find', function (next) {
+wishlistSchema.pre('find', function (next) {
   this.populate({ path: 'userId', select: '-password -role -salt' }).populate({
     path: 'productId',
     select: '-sizes -colors -images -stock -deleted',
@@ -39,6 +34,6 @@ cartSchema.pre('find', function (next) {
   next();
 });
 
-const Cart = mongoose.model('carts', cartSchema);
+const Wishlist = mongoose.model('wishlist', wishlistSchema);
 
-module.exports = Cart;
+module.exports = Wishlist;
