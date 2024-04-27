@@ -29,7 +29,7 @@ const productSchema = mongoose.Schema({
   },
   colors: {
     type: [String],
-    required: [true],
+    // required: [true],
   },
   sizes: {
     type: [
@@ -48,7 +48,7 @@ const productSchema = mongoose.Schema({
   },
   details: {
     type: String,
-    required: [true],
+    // required: [true],
   },
   rating: {
     type: Number,

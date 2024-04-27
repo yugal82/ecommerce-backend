@@ -12,11 +12,11 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById({ _id: req.params.id }, '-password -role');
+    const user = await User.findById({ _id: req.params.id }, '-password -salt');
     if (user) sendResponse(res, 'Success', 200, 'User found.', null, user, user.length);
     else {
       const error = new Error('Invalid id');
-      sendResponse(res, 'Error', 404, 'User not found.', error.message, null, null);
+      sendResponse(res, 'Error', 404, 'User not found.', error, null, null);
     }
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Something went wrong.', error, null, null);
@@ -26,17 +26,13 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     // first check if the user exists.
-    const user = await User.findById(req.params.id);
-
+    const user = await User.findById(req.user.id);
     if (!user) {
       const error = new Error('Invalid Id');
-      sendResponse(res, 'Fail', 404, 'User not found', error.message, null, null);
+      sendResponse(res, 'Fail', 404, 'User not found', error, null, null);
     }
-    const updatedUser = await User.findByIdAndUpdate(
-      { _id: req.params.id },
-      req.body,
-      { projection: '-password -role' },
-      { new: true }
+    const updatedUser = await User.findByIdAndUpdate({ _id: req.user.id }, req.body, { new: true }).select(
+      '-password -salt'
     );
     sendResponse(res, 'Success', 200, 'User updated', null, updatedUser, updatedUser.length);
   } catch (error) {
@@ -46,7 +42,7 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete({ _id: req.body.id });
+    const user = await User.findByIdAndDelete({ _id: req.user.id });
     sendResponse(res, 'Success', 200, 'User deleted', null, user, null);
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Something went wrong.', error, null, null);

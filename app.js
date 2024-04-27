@@ -7,19 +7,23 @@ const session = require('express-session');
 const passport = require('passport');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
+// const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('./models/userModel');
+const { isAuthenticated, sanitizeUser, cookieExtractor } = require('./utils/utils');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+  })
+);
 
-const opts = {};
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = process.env.SECRET_KEY;
-
+app.use(express.static('build'));
+app.use(cookieParser());
 app.use(
   session({
     secret: 'ecommerce-secret',
@@ -34,7 +38,10 @@ const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-const { isAuthenticated, sanitizeUser } = require('./utils/utils');
+
+const opts = {};
+opts.jwtFromRequest = cookieExtractor;
+opts.secretOrKey = process.env.SECRET_KEY;
 
 // passportJs strategies
 passport.use(
@@ -42,17 +49,18 @@ passport.use(
   new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
     try {
       const user = await User.findOne({ email: email }).exec();
-      if (!user) {
+      if (user === null) {
         done(null, false, { message: 'User not found' });
+      } else {
+        crypto.pbkdf2(password, user.salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
+          if (crypto.timingSafeEqual(user.password, hashedPassword)) {
+            const jwtToken = jwt.sign(sanitizeUser(user), process.env.SECRET_KEY);
+            done(null, { id: user.id, role: user.role, jwtToken });
+          } else done(null, false, { message: 'Invalid credentials' });
+        });
       }
-      crypto.pbkdf2(password, user.salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
-        if (crypto.timingSafeEqual(user.password, hashedPassword)) {
-          const jwtToken = jwt.sign(sanitizeUser(user), process.env.SECRET_KEY);
-          done(null, jwtToken);
-        } else done(null, false, { message: 'Invalid credentials' });
-      });
     } catch (error) {
-      done(error);
+      done(error, false);
     }
   })
 );
@@ -61,7 +69,7 @@ passport.use(
   'jwt',
   new JwtStrategy(opts, async (jwt_payload, done) => {
     try {
-      const user = await User.findOne({ id: jwt_payload.sub });
+      const user = await User.findById(jwt_payload.id).exec();
       if (user) return done(null, user);
       else return done(null, false);
     } catch (error) {
@@ -80,6 +88,7 @@ passport.serializeUser((user, cb) => {
 // this changes a session variable on req.user when called from authorized requests
 passport.deserializeUser((user, cb) => {
   process.nextTick(() => {
+    console.log('Deserialized called: ', user);
     return cb(null, user);
   });
 });
@@ -87,7 +96,7 @@ passport.deserializeUser((user, cb) => {
 // Define all the middleware functions here
 
 // Define all the Routes here
-app.use('/product', isAuthenticated(), productRoutes);
+app.use('/product', productRoutes);
 app.use('/user', userRoutes);
 app.use('/cart', isAuthenticated(), cartRoutes);
 app.use('/order', isAuthenticated(), orderRoutes);

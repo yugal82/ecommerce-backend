@@ -1,15 +1,15 @@
 const Cart = require('../models/cartModel');
 const { sendResponse } = require('../utils/utils');
 
-const getAllItemsFromCart = async (req, res) => {
+const getCartItemsOfUser = async (req, res) => {
   try {
     // we have to get all the items of a particular user. this can be done by filtering out the products of a certain userId
-    const cartProducts = await Cart.find({ userId: req.query.userid });
+    const cartProducts = await Cart.find({ userId: req.user.id });
     if (cartProducts.length) {
       sendResponse(res, 'Success', 200, 'Products fetched from cart', null, cartProducts, cartProducts.length);
     } else {
       const error = new Error('Cart is empty.');
-      sendResponse(res, 'Success', 401, 'Cart is empty.', error.message, null, 0);
+      sendResponse(res, 'Success', 200, 'Cart is empty.', error, [], 0);
     }
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Something went wrong', error, null, null);
@@ -18,10 +18,10 @@ const getAllItemsFromCart = async (req, res) => {
 
 const addToCart = async (req, res) => {
   try {
-    const cartItem = new Cart(req.body);
+    const cartItem = new Cart({ productId: req.body.productId, userId: req.user.id, quantity: req.body.quantity });
     const doc = await cartItem.save();
-    // we need to find the product after it is saved, becuase we cannot populate before saving the product.
-    const item = await Cart.findOne({ _id: cartItem.id });
+    // // we need to find the product after it is saved, becuase we cannot populate before saving the product.
+    const item = await Cart.findOne({ _id: doc.id });
     sendResponse(res, 'Success', 200, 'Product added to cart', null, item, null);
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Something went wrong', error, null, null);
@@ -49,4 +49,4 @@ const updateCart = async (req, res) => {
   }
 };
 
-module.exports = { addToCart, getAllItemsFromCart, deleteItemFromCart, updateCart };
+module.exports = { addToCart, getCartItemsOfUser, deleteItemFromCart, updateCart };
