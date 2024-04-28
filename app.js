@@ -1,7 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
@@ -10,9 +9,10 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
-// const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('./models/userModel');
 const { isAuthenticated, sanitizeUser, cookieExtractor } = require('./utils/utils');
+
+const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +22,7 @@ app.use(
   })
 );
 
-app.use(express.static('build'));
+// app.use(express.static('build'));
 app.use(cookieParser());
 app.use(
   session({

@@ -26,7 +26,7 @@ wishlistSchema.set('toJSON', {
   },
 });
 
-wishlistSchema.pre('find', function (next) {
+wishlistSchema.pre(/^find/, function (next) {
   this.populate({ path: 'userId', select: '-password -role -salt' }).populate({
     path: 'productId',
     select: '-sizes -colors -images -stock -deleted',
