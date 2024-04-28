@@ -44,4 +44,15 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+const logout = async (req, res) => {
+  try {
+    req.logout(function (err) {
+      if (err) return next(err);
+      res.redirect('/');
+    });
+  } catch (error) {
+    sendResponse(res, 'Fail', 400, 'Error while logging out.', error, null, null);
+  }
+};
+
+module.exports = { signup, login, logout };
