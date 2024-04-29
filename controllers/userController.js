@@ -26,11 +26,12 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     // first check if the user exists.
-    const user = await User.findById(req.user.id);
+    const user = await User.findById({ _id: req.user.id });
     if (!user) {
       const error = new Error('Invalid Id');
       sendResponse(res, 'Fail', 404, 'User not found', error, null, null);
     }
+
     const updatedUser = await User.findByIdAndUpdate({ _id: req.user.id }, req.body, { new: true }).select(
       '-password -salt'
     );

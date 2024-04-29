@@ -37,8 +37,9 @@ const login = async (req, res) => {
   try {
     // login locgic here.
     // passportJs auth implementation done in app.js file
-    res.cookie('jwt', req.user.jwtToken, { expires: new Date(Date.now() + 3600000), httpOnly: true });
-    res.json({ status: 'Success', user: req.user });
+    res
+      .cookie('jwt', req.user.jwtToken, { expires: new Date(Date.now() + 3600000), httpOnly: true })
+      .json({ status: 'Success', user: req.user });
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Error while logging in.', error, null, null);
   }

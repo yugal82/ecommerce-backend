@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('./models/userModel');
 const { isAuthenticated, sanitizeUser, cookieExtractor } = require('./utils/utils');
 
@@ -41,7 +42,8 @@ const orderRoutes = require('./routes/orderRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 
 const opts = {};
-opts.jwtFromRequest = cookieExtractor;
+// opts.jwtFromRequest = cookieExtractor;
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.SECRET_KEY;
 
 // passportJs strategies
@@ -57,7 +59,7 @@ passport.use(
           if (crypto.timingSafeEqual(user.password, hashedPassword)) {
             const jwtToken = jwt.sign(sanitizeUser(user), process.env.SECRET_KEY);
             done(null, { id: user.id, role: user.role, jwtToken });
-          } else done(null, false, { message: 'Invalid credentials' });
+          } else done(err, false, { message: 'Invalid credentials' });
         });
       }
     } catch (error) {
@@ -89,7 +91,6 @@ passport.serializeUser((user, cb) => {
 // this changes a session variable on req.user when called from authorized requests
 passport.deserializeUser((user, cb) => {
   process.nextTick(() => {
-    console.log('Deserialized called: ', user);
     return cb(null, user);
   });
 });
