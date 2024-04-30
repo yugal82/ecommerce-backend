@@ -45,6 +45,12 @@ const login = async (req, res) => {
   }
 };
 
+const checkAuth = (req, res) => {
+  if (req.user) {
+    res.json({ user: req.user });
+  } else res.status(401);
+};
+
 const logout = async (req, res) => {
   try {
     req.logout(function (err) {
@@ -56,4 +62,4 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, logout };
+module.exports = { signup, login, logout, checkAuth };

@@ -23,7 +23,7 @@ app.use(
   })
 );
 
-// app.use(express.static('build'));
+app.use(express.static('build'));
 app.use(cookieParser());
 app.use(
   session({
@@ -42,8 +42,8 @@ const orderRoutes = require('./routes/orderRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 
 const opts = {};
-// opts.jwtFromRequest = cookieExtractor;
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.jwtFromRequest = cookieExtractor;
+// opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.SECRET_KEY;
 
 // passportJs strategies
@@ -73,10 +73,10 @@ passport.use(
   new JwtStrategy(opts, async (jwt_payload, done) => {
     try {
       const user = await User.findById(jwt_payload.id).exec();
-      if (user) return done(null, user);
+      if (user) return done(null, { role: user.role, id: user.id, email: user.email });
       else return done(null, false);
     } catch (error) {
-      return done(error, false);
+      return done(null, false);
     }
   })
 );
@@ -84,7 +84,7 @@ passport.use(
 // this creates a session variable on req.user on being called from callbacks
 passport.serializeUser((user, cb) => {
   process.nextTick(() => {
-    return cb(null, { id: user.id, role: user.role });
+    return cb(null, user);
   });
 });
 
