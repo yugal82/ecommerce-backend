@@ -20,7 +20,7 @@ const signup = async (req, res) => {
       req.login(sanitizeUser(user), (err) => {
         if (err) sendResponse(res, 'Fail', 400, 'Something went wrong', err, null, null);
         else {
-          const jwtToken = jwt.sign(sanitizeUser(user), process.env.SECRET_KEY);
+          const jwtToken = jwt.sign(sanitizeUser(user), process.env.JWT_SECRET_KEY);
           res
             .cookie('jwt', jwtToken, { expires: new Date(Date.now() + 3600000), httpOnly: true })
             .status(201)
