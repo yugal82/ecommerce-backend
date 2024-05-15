@@ -13,12 +13,43 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('./models/userModel');
 // This is your test secret API key.
 const stripe = require('stripe')(process.env.STRIPE_SERVER_KEY);
+const path = require('path');
 
 const { isAuthenticated, sanitizeUser, cookieExtractor } = require('./utils/utils');
 
 const app = express();
 
-app.use(express.json());
+// webhook
+const endpointSecret = 'whsec_ccfc4bd2803496daeee7078ce90690eb86c342be60973d2d99e54f5b407924a2';
+app.post('/webhook', express.raw({ type: 'application/json' }), (request, response) => {
+  const sig = request.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+  } catch (err) {
+    response.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
+  // Handle the event
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      const paymentIntentSucceeded = event.data.object;
+      // Then define and call a function to handle the event payment_intent.succeeded
+      break;
+    // ... handle other event types
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+  // Return a 200 response to acknowledge receipt of the event
+  response.send();
+});
+
+const opts = {};
+// opts.jwtFromRequest = cookieExtractor;
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET_KEY;
+
+app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
@@ -26,7 +57,7 @@ app.use(
   })
 );
 
-app.use(express.static('build'));
+// app.use(express.static(path.resolve(__dirname, 'build')));
 app.use(cookieParser());
 app.use(
   session({
@@ -43,11 +74,6 @@ const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
-
-const opts = {};
-opts.jwtFromRequest = cookieExtractor;
-// opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = process.env.JWT_SECRET_KEY;
 
 // passportJs strategies
 passport.use(
@@ -116,31 +142,6 @@ app.post('/create-payment-intent', async (req, res) => {
   res.json({
     clientSecret: paymentIntent.client_secret,
   });
-});
-
-// webhook
-const endpointSecret = 'whsec_ccfc4bd2803496daeee7078ce90690eb86c342be60973d2d99e54f5b407924a2';
-app.post('/webhook', express.raw({ type: 'application/json' }), (request, response) => {
-  const sig = request.headers['stripe-signature'];
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-  } catch (err) {
-    response.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
-  // Handle the event
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntentSucceeded = event.data.object;
-      // Then define and call a function to handle the event payment_intent.succeeded
-      break;
-    // ... handle other event types
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-  // Return a 200 response to acknowledge receipt of the event
-  response.send();
 });
 
 // Define all the Routes here
