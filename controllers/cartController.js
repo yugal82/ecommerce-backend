@@ -18,7 +18,12 @@ const getCartItemsOfUser = async (req, res) => {
 
 const addToCart = async (req, res) => {
   try {
-    const cartItem = new Cart({ productId: req.body.productId, userId: req.user.id, quantity: req.body.quantity });
+    const cartItem = new Cart({
+      productId: req.body.productId,
+      userId: req.user.id,
+      quantity: req.body.quantity,
+      size: req.body.size,
+    });
     const doc = await cartItem.save();
     // // we need to find the product after it is saved, becuase we cannot populate before saving the product.
     const item = await Cart.findOne({ _id: doc.id });

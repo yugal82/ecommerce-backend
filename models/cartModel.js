@@ -16,6 +16,10 @@ const cartSchema = mongoose.Schema({
     required: true,
     default: 1,
   },
+  size: {
+    type: String,
+    required: true,
+  },
 });
 
 const virtual = cartSchema.virtual('id');

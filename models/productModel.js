@@ -31,18 +31,23 @@ const productSchema = mongoose.Schema({
     type: [String],
     // required: [true],
   },
+  // sizes: {
+  //   type: [
+  //     {
+  //       name: {
+  //         type: String,
+  //         required: [true],
+  //       },
+  //       inStock: {
+  //         type: Boolean,
+  //       },
+  //     },
+  //   ],
+  //   required: [true],
+  //   _id: false,
+  // },
   sizes: {
-    type: [
-      {
-        name: {
-          type: String,
-          required: [true],
-        },
-        inStock: {
-          type: Boolean,
-        },
-      },
-    ],
+    type: [String],
     required: [true],
     _id: false,
   },
