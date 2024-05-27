@@ -27,10 +27,10 @@ const productSchema = mongoose.Schema({
     type: String,
     required: [true, 'Product must have a thumbnail URL.'],
   },
-  colors: {
-    type: [String],
-    // required: [true],
-  },
+  // colors: {
+  //   type: [String],
+  //   // required: [true],
+  // },
   // sizes: {
   //   type: [
   //     {
@@ -51,10 +51,10 @@ const productSchema = mongoose.Schema({
     required: [true],
     _id: false,
   },
-  details: {
-    type: String,
-    // required: [true],
-  },
+  // details: {
+  //   type: String,
+  //   // required: [true],
+  // },
   rating: {
     type: Number,
     min: [0, 'Reviews must be atleast 1'],

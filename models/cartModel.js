@@ -38,7 +38,7 @@ cartSchema.set('toJSON', {
 cartSchema.pre(/^find/, function (next) {
   this.populate({ path: 'userId', select: '-password -role -salt' }).populate({
     path: 'productId',
-    select: '-sizes -colors -images -stock -deleted',
+    select: '-sizes -images -deleted',
   });
   next();
 });
