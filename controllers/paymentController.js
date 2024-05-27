@@ -1,4 +1,4 @@
-const razorpay_instance = require('../Razorpay.js');
+const razorpay_instance = require('../utils/Razorpay.js');
 const crypto = require('crypto');
 const { sendResponse } = require('../utils/utils.js');
 
