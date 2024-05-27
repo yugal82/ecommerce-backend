@@ -12,37 +12,37 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('./models/userModel');
 // This is your test secret API key.
-const stripe = require('stripe')(process.env.STRIPE_SERVER_KEY);
+// const stripe = require('stripe')(process.env.STRIPE_SERVER_KEY);
 const path = require('path');
 
 const { isAuthenticated, sanitizeUser, cookieExtractor } = require('./utils/utils');
 
 const app = express();
 
-// webhook
-const endpointSecret = 'whsec_ccfc4bd2803496daeee7078ce90690eb86c342be60973d2d99e54f5b407924a2';
-app.post('/webhook', express.raw({ type: 'application/json' }), (request, response) => {
-  const sig = request.headers['stripe-signature'];
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-  } catch (err) {
-    response.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
-  // Handle the event
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntentSucceeded = event.data.object;
-      // Then define and call a function to handle the event payment_intent.succeeded
-      break;
-    // ... handle other event types
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-  // Return a 200 response to acknowledge receipt of the event
-  response.send();
-});
+// // webhook
+// const endpointSecret = 'whsec_ccfc4bd2803496daeee7078ce90690eb86c342be60973d2d99e54f5b407924a2';
+// app.post('/webhook', express.raw({ type: 'application/json' }), (request, response) => {
+//   const sig = request.headers['stripe-signature'];
+//   let event;
+//   try {
+//     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+//   } catch (err) {
+//     response.status(400).send(`Webhook Error: ${err.message}`);
+//     return;
+//   }
+//   // Handle the event
+//   switch (event.type) {
+//     case 'payment_intent.succeeded':
+//       const paymentIntentSucceeded = event.data.object;
+//       // Then define and call a function to handle the event payment_intent.succeeded
+//       break;
+//     // ... handle other event types
+//     default:
+//       console.log(`Unhandled event type ${event.type}`);
+//   }
+//   // Return a 200 response to acknowledge receipt of the event
+//   response.send();
+// });
 
 const opts = {};
 // opts.jwtFromRequest = cookieExtractor;
@@ -74,6 +74,7 @@ const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // passportJs strategies
 passport.use(
@@ -124,25 +125,25 @@ passport.deserializeUser((user, cb) => {
   });
 });
 
-// Payment intent
-app.post('/create-payment-intent', async (req, res) => {
-  const { totalAmount, orderId } = req.body;
-  // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: totalAmount * 100,
-    currency: 'inr',
-    automatic_payment_methods: {
-      enabled: true,
-    },
-    metadata: {
-      orderId,
-    },
-  });
+// // Payment intent
+// app.post('/create-payment-intent', async (req, res) => {
+//   const { totalAmount, orderId } = req.body;
+//   // Create a PaymentIntent with the order amount and currency
+//   const paymentIntent = await stripe.paymentIntents.create({
+//     amount: totalAmount * 100,
+//     currency: 'inr',
+//     automatic_payment_methods: {
+//       enabled: true,
+//     },
+//     metadata: {
+//       orderId,
+//     },
+//   });
 
-  res.json({
-    clientSecret: paymentIntent.client_secret,
-  });
-});
+//   res.json({
+//     clientSecret: paymentIntent.client_secret,
+//   });
+// });
 
 // Define all the Routes here
 app.use('/product', productRoutes);
@@ -150,6 +151,7 @@ app.use('/user', userRoutes);
 app.use('/cart', isAuthenticated(), cartRoutes);
 app.use('/order', isAuthenticated(), orderRoutes);
 app.use('/wishlist', isAuthenticated(), wishlistRoutes);
+app.use('/payment', paymentRoutes);
 
 app.get('/', async (req, res) => {
   res.status(200).json({ status: 'success' });
