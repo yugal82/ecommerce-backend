@@ -12,11 +12,23 @@ const getAllProducts = async (req, res) => {
     // -rating - more than 4, less than 3, etc --------DONE
     // -colors - white, black, etc --------DONE
     // -price range - 500 to 800, 800 to 1000, etc.
-    const queryObj = { ...req?.query };
-    const excludeFields = ['sort', 'order', 'price', 'rating'];
-    excludeFields.forEach((field) => delete queryObj[field]);
 
-    let query = Product.find({ ...queryObj });
+    const queryObj = {};
+    // const excludeFields = ['sort', 'order', 'price', 'rating'];
+    // excludeFields.forEach((field) => delete queryObj[field]);
+
+    let query = Product.find(queryObj);
+    let totalProductsByQuery = Product.find(queryObj);
+
+    if (req?.query?.category) {
+      query = query.find({ category: { $in: req.query.category.split(',') } });
+      totalProductsByQuery = totalProductsByQuery.find({ category: { $in: req.query.category.split(',') } });
+    }
+
+    if (req?.query?.brand) {
+      query = query.find({ brand: { $in: req.query.brand.split(',') } });
+      totalProductsByQuery = totalProductsByQuery.find({ brand: { $in: req.query.brand.split(',') } });
+    }
 
     // sorting can be done on the basis of - High to low, Low to high, Best Rating.
     // for sorting, the sorting parameter would be either price or rating.
