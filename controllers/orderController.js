@@ -57,7 +57,8 @@ const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find();
     if (orders.length) {
-      sendResponse(res, 'Success', 200, 'Orders fetched.', null, orders, orders.length);
+      const reverseOrder = orders.reverse();
+      sendResponse(res, 'Success', 200, 'Orders fetched.', null, reverseOrder, reverseOrder.length);
     } else sendResponse(res, 'Success', 200, 'You have not ordered anything.', null, orders, 0);
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Something went wrong', error, null, null);
