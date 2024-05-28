@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/check', passport.authenticate('jwt'), checkAuth);
 router.post('/signup', signup);
 router.post('/login', passport.authenticate('local'), login);
-router.post('/logout', logout);
+router.get('/logout', logout);
 
 // user data related routes
 // the base url - http://localhost:8080/user
