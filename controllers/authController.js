@@ -39,6 +39,8 @@ const login = async (req, res) => {
     // passportJs auth implementation done in app.js file
     res
       .cookie('jwt', req.user.jwtToken, {
+        domain: 'ecommerce-clothing-ui.vercel.app',
+        path: '/',
         expires: new Date(Date.now() + 3600000),
         httpOnly: true,
         secure: true, // Ensure this matches your deployment (true if HTTPS)
