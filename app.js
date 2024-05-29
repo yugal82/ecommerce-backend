@@ -45,8 +45,8 @@ const app = express();
 // });
 
 const opts = {};
-opts.jwtFromRequest = cookieExtractor;
-// opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+// opts.jwtFromRequest = cookieExtractor;
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.JWT_SECRET_KEY;
 
 app.use(express.json({ limit: '1mb' }));
