@@ -11,7 +11,7 @@ const getAllOrdersByUserId = async (req, res) => {
       sendResponse(res, 'Success', 200, 'Orders fetched.', null, orders, orders.length);
     } else {
       const error = new Error('You have 0 orders');
-      sendResponse(res, 'Success', 401, 'No orders.', error, null, 0);
+      sendResponse(res, 'Success', 200, 'No orders.', error, null, 0);
     }
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Something went wrong', error, null, null);
