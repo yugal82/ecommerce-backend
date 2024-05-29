@@ -68,7 +68,6 @@ app.use(
   })
 );
 app.use(passport.authenticate('session'));
-app.set('trust proxy', 1);
 
 // require all the routes here
 const productRoutes = require('./routes/productRoutes');
