@@ -54,7 +54,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: 'https://ecommerce-clothing-ui.vercel.app/',
-    // credentials: true,
   })
 );
 

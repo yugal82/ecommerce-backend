@@ -44,8 +44,6 @@ const login = async (req, res) => {
         secure: true, // Ensure this matches your deployment (true if HTTPS)
         sameSite: 'None',
       })
-      .setHeader('Access-Control-Allow-Credentials', true)
-      .setHeader('Access-Control-Allow-Origin', 'https://ecommerce-clothing-ui.vercel.app/')
       .json({ status: 'Success', user: req.user });
   } catch (error) {
     sendResponse(res, 'Error', 400, 'Error while logging in.', error, null, null);
