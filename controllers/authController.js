@@ -58,7 +58,8 @@ const checkAuth = (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.cookie('jwt', null, { expires: new Date(Date.now()), httpOnly: true }).sendStatus(200);
+    // res.cookie('jwt', null, { expires: new Date(Date.now()), httpOnly: true }).sendStatus(200);
+    res.clearCookie('jwt').sendStatus(200);
   } catch (error) {
     sendResponse(res, 'Fail', 400, 'Error while logging out.', error, null, null);
   }
