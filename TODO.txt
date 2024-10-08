@@ -2,3 +2,4 @@ Further scope for development
     - Send emails when order is created
     - Forgot password functionality
     - Functionality for updating the user details like password, name, emails and phone number
+    - Functionality for deleting/cancelling order
